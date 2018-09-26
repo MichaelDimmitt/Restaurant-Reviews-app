@@ -160,10 +160,11 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
+  image.alt = `An image of ${restaurant.name}`
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
   li.append(name);
 
@@ -187,6 +188,8 @@ createRestaurantHTML = (restaurant) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+
+  console.log("ServiceWorker registration started2")
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
@@ -199,16 +202,14 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 
 }
 
-if (navigator.serviceWorker) {
   console.log("ServiceWorker registration started")
   navigator.serviceWorker.register('/sw.js')
-    .catch((err) => {
-      console.log('SW error' + err);
+    .then((err) => {
+      console.log('SW success' );
     })
-}
-else {
-  console.log("Service worker is not supported")
-}
+    .catch((err) => {
+      console.log({err});
+    })
 
 /* addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {

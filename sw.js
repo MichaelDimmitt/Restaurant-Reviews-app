@@ -3,7 +3,6 @@ console.log('Service worker executing');
 const version = 'v1::';
 
 const cacheFiles = [
-  '/',
   '/index.html',
 	'/restaurant.html',
 	'/css/styles.css',
@@ -24,12 +23,34 @@ const cacheFiles = [
 
 //install
 self.addEventListener('install', (event) => {
-  console.log('WORKER: installed');
   event.waitUntil(
     caches.open('v1').
-    then( (cache) => {
+		then( (cache) => {
       return cache.addAll(cacheFiles);
     })
   );
 });
 
+//fetch
+self.addEventListener('fetch', function(e) {
+  e.respondWith(
+    caches.match(e.request).then(function(response) {
+      if (response) {
+        return response;
+      }
+      else {
+        return fetch(e.request)
+          .then(function(response) {
+            const clonedResponse = response.clone();
+            caches.open('v1').then(function(cache) {
+              cache.put(e.request, clonedResponse);
+            })
+            return response;
+          })
+          .catch(function(err) {
+            console.log({err});
+          });
+      }
+    })
+  );
+});
